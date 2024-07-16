@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MtG Collektion App</title>
+  <!-- CSS component... can make separate css file and link it here -->
+  <style>
+    body {
+      padding: 15px;
+      background-color: beige;
+      font-family: Cambria;
+    }
+    #title {
+      padding: 10px;
+      font-size: 36px;
+      border: 2px solid #FFF;
+      width: 250px;
+      font-style: italic;
+    }
+    #mtg-header {
+      font-size: 24px;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+      width: 250px;
+    }
+    li {
+      color: #333;
+      background-color: lightgray;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+    }
+  </style>
+
+</head>
+<body>
+  <!-- Main website header/title -->
+  <h1 id="title">MtG Card Collection db</h1>
+
+  <form>
+    <!-- text field box for inputting card names -->
+    <input type="text" id="user-card-input" placeholder="Enter name of card here" required>
+  </form>
+  <!-- title header for right above card list/db -->
+  <h2 id="mtg-header">Card Collection:</h2>
+  <ul>
+
+  </ul>
+
+  <button id="clear">Clear DB</button>
+
+  <script>
+    var form = document.querySelector('form');
+    var cardList = document.querySelector('ul');
+    var button = document.querySelector('button');
+    var input = document.getElementById('user-card-input');
+
+    /* 
+    Ternary operator... this will look at code provided and is conditional. If this exists,
+    if there is a key in local storage of mtgCard... then this is true. else, false.
+    Anything after ? is what happens when true, anything after : is what happens when false
+    */
+    var mtgArray = localStorage.getItem('mtgCard') ? JSON.parse(localStorage.getItem('mtgCard')) : [];
+
+    localStorage.setItem('mtgCard', JSON.stringify(mtgArray));
+
+    /*
+    Declare variable 'storage' that contains all info in localStorage. We'll assign to 'storage'
+    JSON.parse() method that converts strings from local storage into data we can access with
+    Javascript. When receiving data from web server, data is always a string. Parse data with
+    JSON.parse() and the data becomes a Javascript object.
+    */
+    var storage = JSON.parse(localStorage.getItem('mtgCard'));
+
+
+    form.addEventListener('submit', function(e){
+        e.preventDefault();
+
+        // Push onto 'mtgArray' the 'user-card-input.value'
+        mtgArray.push(input.value);
+        // On localStorage now use 'setItem()' for the key 'mtgCard' the value of
+        // the mtgArray as a string with JSON.stringify() method
+        localStorage.setItem('mtgCard', JSON.stringify(mtgArray));
+        mtgMaker(input.value);
+        input.value = "";
+
+    });
+
+    // this will add each user input as html object
+    var mtgMaker = function(text) {
+        var mtg = document.createElement('li');
+        mtg.textContent = text;
+        cardList.appendChild(mtg);
+    }
+
+    // this will output contents of array onto page
+    for (var i=0;i<storage.length;i++){
+      mtgMaker(storage[i]);
+    }
+
+    button.addEventListener('click', function(){
+      localStorage.clear();
+        while(cardList.firstChild){
+            cardList.removeChild(cardList.firstChild);
+        }
+    });
+
+  </script>
+</body>
+</html>
